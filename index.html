@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI, one circle at a time</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07182c;--bg2:#0f3350;--text:#eaf3f6;--muted:#a3bbc7;--panel:rgba(12,40,64,.78);--line:rgba(255,255,255,.16);--amber:#f2b84b;--ink:#0a1f3a;--c-ai:#1b3d6d;--c-ml:#1d6c85;--c-dl:#278a8a;--c-gen:#4aa97b;--c-llm:#f2b84b;--hd:'Bricolage Grotesque','Trebuchet MS',sans-serif;--bd:'Figtree','Segoe UI',sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#07182c;--bg2:#0f3350;--text:#eaf3f6}}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eaf3f6;--bg2:#cfe3ea;--text:#0a1f3a;--muted:#45606e;--panel:rgba(255,255,255,.86);--line:rgba(10,31,58,.18)}}
+:root[data-theme="dark"]{--bg:#07182c;--bg2:#0f3350;--text:#eaf3f6}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100%;background:radial-gradient(1200px 700px at 30% 20%,var(--bg2),var(--bg));color:var(--text);font:400 17px/1.6 var(--bd)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+header{padding:20px 24px 0;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+header h1{font:800 clamp(22px,3vw,32px)/1.1 var(--hd);margin:0}
+nav.scenes{display:flex;flex-wrap:wrap;gap:8px}
+nav.scenes button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 14px;font-weight:600;font-size:15px;transition:background .3s}
+nav.scenes button[aria-current=true]{background:var(--amber);color:var(--ink);border-color:var(--amber)}
+main{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:24px;padding:20px 24px 28px;align-items:start}
+.stage{position:sticky;top:12px;aspect-ratio:1;max-height:86vh;width:100%;border-radius:28px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.07),transparent 70%)}
+.stage svg{width:100%;height:100%;display:block}
+#cam{transform-origin:0 0;transition:transform 1.4s cubic-bezier(.65,0,.25,1)}
+.ring{cursor:pointer;vector-effect:non-scaling-stroke;stroke:rgba(255,255,255,.35);stroke-width:1.5;transition:opacity .6s,stroke .4s}
+.ring.dim{opacity:.55}.ring.on{stroke:var(--amber);stroke-width:4;opacity:1}
+.lbl{pointer-events:none;font:700 17px var(--hd);fill:#fff;text-anchor:middle}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:26px;backdrop-filter:blur(8px)}
+.panel h2{font:800 clamp(26px,3.2vw,38px)/1.1 var(--hd);margin:0 0 6px}
+.panel .line{font-size:19px;margin:0 0 16px}
+.kitchen{border-left:4px solid var(--amber);padding:2px 0 2px 14px;margin:0 0 18px;color:var(--muted)}
+.kitchen b{color:var(--text)}
+.demo{border:1px dashed var(--line);border-radius:18px;padding:16px;margin-bottom:16px}
+.demo .q{margin:0 0 10px;font-weight:600}
+.out{margin-top:10px;font-weight:600;min-height:3em}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip{border:1px solid var(--line);border-radius:12px;padding:6px 12px;font-size:15px;background:transparent}
+.chip.sel{background:var(--amber);color:var(--ink);border-color:var(--amber)}
+.how{color:var(--muted);font-size:15px;margin:0 0 6px}
+.steps{display:flex;gap:10px;margin-top:6px}
+.steps button{flex:1;border-radius:14px;border:1px solid var(--line);background:transparent;padding:10px;font-weight:600}
+.steps .go{background:var(--amber);color:var(--ink);border-color:var(--amber)}
+input[type=range]{width:100%;accent-color:var(--amber)}
+.mail{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;border:1px solid var(--line);background:transparent;border-radius:12px;padding:8px 12px;margin:6px 0}
+.mail em{font-style:normal;font-weight:700}
+.layers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.layers div{border:1px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center;font-size:26px;opacity:.3;transition:opacity .5s,background .5s}
+.layers div.lit{opacity:1;background:rgba(242,184,75,.22)}
+.layers small{display:block;font-size:13px;color:var(--muted)}
+.art{height:110px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:44px;margin-top:10px;transition:background .6s}
+.bars{display:flex;gap:6px;align-items:flex-end;height:90px;margin-top:10px}.bars i{flex:1;background:var(--amber);border-radius:4px;transition:height .5s}
+.opt{display:flex;align-items:center;gap:10px;width:100%;border:1px solid var(--line);background:transparent;border-radius:12px;padding:7px 12px;margin:6px 0;text-align:left}
+.opt span.b{height:8px;border-radius:4px;background:var(--c-gen);display:block}
+.opt .w{min-width:84px;font-weight:700}
+footer{padding:8px 24px 28px;color:var(--muted);font-size:14px;max-width:980px}
+footer a{color:var(--amber)}
+#intro{position:fixed;inset:0;z-index:50;background:#030c18;color:#eaf3f6;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;transition:opacity 1s}
+#intro::before,#intro::after{content:"";position:absolute;left:0;right:0;height:14vh;background:#000;animation:bar 2.2s ease-out forwards}
+#intro::before{top:0}#intro::after{bottom:0}
+@keyframes bar{from{height:50vh}to{height:12vh}}
+#intro h1{font:800 clamp(34px,7vw,76px)/1.05 var(--hd);margin:0 0 14px;animation:fade 2s .5s both}
+#intro p{max-width:34em;font-size:19px;color:#a3bbc7;animation:fade 2s 1.1s both}
+#intro button{margin-top:18px;background:#f2b84b;color:#0a1f3a;border:0;border-radius:999px;padding:14px 30px;font-weight:700;font-size:18px;animation:fade 1.5s 1.8s both;z-index:2}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#intro.gone{opacity:0;pointer-events:none}
+@media (max-width:860px){main{grid-template-columns:1fr}.stage{position:relative;top:0;max-height:none}}
+@media (prefers-reduced-motion:reduce){#cam,.ring,#intro,#intro::before,#intro::after,#intro h1,#intro p,#intro button{transition:none;animation:none}}
+</style>
+</head>
+<body>
+<div id="intro" role="dialog" aria-label="Introduction">
+  <h1>AI is not one thing.<br>It is circles inside circles.</h1>
+  <p>Press play and we will zoom in, one circle at a time, from the biggest idea down to the one you use every day.</p>
+  <button id="play">Roll camera</button>
+</div>
+<header>
+  <h1>AI, one circle at a time</h1>
+  <nav class="scenes" id="nav" aria-label="Scenes"></nav>
+</header>
+<main>
+  <div class="stage">
+    <svg viewBox="0 0 600 600" role="img" aria-label="Nested circles: AI contains Machine Learning, which contains Deep Learning and Generative AI, which overlap in Large Language Models">
+      <g id="cam">
+        <circle class="ring" data-i="0" cx="300" cy="300" r="290" fill="var(--c-ai)"/>
+        <circle class="ring" data-i="1" cx="300" cy="330" r="250" fill="var(--c-ml)"/>
+        <circle class="ring" data-i="2" cx="235" cy="385" r="140" fill="var(--c-dl)"/>
+        <circle class="ring" data-i="3" cx="365" cy="385" r="140" fill="var(--c-gen)" fill-opacity=".92"/>
+        <circle class="ring" data-i="4" cx="300" cy="385" r="70" fill="var(--c-llm)"/>
+        <text class="lbl" x="300" y="52">Artificial Intelligence</text>
+        <text class="lbl" x="300" y="125">Machine Learning</text>
+        <text class="lbl" x="160" y="385" style="font-size:15px">Deep</text><text class="lbl" x="160" y="403" style="font-size:15px">Learning</text>
+        <text class="lbl" x="440" y="379" style="font-size:15px">Generative</text><text class="lbl" x="440" y="397" style="font-size:15px">AI</text>
+        <text class="lbl" x="300" y="383" style="fill:#0a1f3a;font-size:20px">LLM</text><text class="lbl" x="300" y="402" style="fill:#0a1f3a;font-size:11px">words only</text>
+      </g>
+    </svg>
+  </div>
+  <section class="panel" id="panel" aria-live="polite"></section>
+</main>
+<footer>
+  <p>Disclaimer: This page is for general educational purposes only. Examples are simplified to aid understanding and do not represent any product's exact design. Product names belong to their respective owners.</p>
+  <p>&copy; 2026. All rights reserved. No part of this material may be copied or redistributed without written permission.</p>
+</footer>
+<script>
+const $=s=>document.querySelector(s),P=$('#panel'),cam=$('#cam');
+const L=[
+{n:'Artificial Intelligence',cx:300,cy:300,s:1,line:'Any machine that does something we would normally need human thinking for.',k:'The <b>whole kitchen</b>. Every way of getting a meal on the table, from a fixed recipe card to a creative chef.',how:'How it works: rules, logic and search.',ex:['Chess engine','IBM Watson','Smart thermostat'],init:()=>aiT(22),demo:`<p class="q">Drag the temperature. A person wrote the rule. The machine only follows it.</p><input type="range" min="10" max="40" value="22" oninput="aiT(this.value)" aria-label="Room temperature"><div class="out" id="o"></div>`},
+{n:'Machine Learning',cx:300,cy:330,s:1.12,line:'AI that learns from examples instead of being given every rule.',k:'A <b>cook who learns by tasting</b> thousands of dishes, then judges a new dish on their own.',how:'How it works: finds patterns in data.',ex:['Spam filter','Netflix picks','Bank fraud alerts'],init:mlR,demo:`<p class="q">Teach a spam filter. Tap each email to mark it spam or not spam.</p><div id="ml"></div><div class="out" id="o"></div>`},
+{n:'Deep Learning',cx:235,cy:385,s:2,line:'Machine learning with many layers, each one spotting something a little more complex.',k:'A <b>big kitchen team in a line</b>. One washes, one chops, one seasons, one plates. Each passes better work forward.',how:'How it works: neural networks with many layers.',ex:['Face unlock','Voice assistants','Medical scan reading'],init:()=>dlR(1),demo:`<p class="q">Add layers and watch the machine understand more.</p><input type="range" min="1" max="4" value="1" oninput="dlR(+this.value)" aria-label="Number of layers"><div class="layers" id="ly"></div><div class="out" id="o"></div>`},
+{n:'Generative AI',cx:365,cy:385,s:2,line:'AI that creates something new instead of only sorting or predicting.',k:'A <b>chef who invents a new dish</b> instead of only checking whether yours is good.',how:'How it works: neural networks trained to generate.',ex:['ChatGPT','Claude','Image and music makers'],init:()=>gen('w'),demo:`<p class="q">Pick what to create, then press create. Every result is new.</p><div class="chips" id="gt"></div><div id="ga"></div><div class="steps"><button class="go" onclick="gen(G.k)">Create something new</button></div>`},
+{n:'Large Language Models',cx:300,cy:385,s:3.5,line:'Generative AI that works with words. It reads and writes language.',k:'A <b>chef whose only ingredient is words</b>, picking the next word again and again.',how:'How it works: transformer networks with billions of settings, trained on text.',ex:['GPT-4','Llama 3','Claude'],init:()=>lm(0,[]),demo:`<div id="lm"></div>`}
+];
+let cur=0;
+const nav=$('#nav');
+L.forEach((l,i)=>{const b=document.createElement('button');b.textContent=['AI','Machine Learning','Deep Learning','Generative AI','LLM'][i];b.onclick=()=>go(i);nav.appendChild(b)});
+function go(i){cur=i;const l=L[i];
+cam.style.transform=`translate(${300-l.s*l.cx}px,${300-l.s*l.cy}px) scale(${l.s})`;
+document.querySelectorAll('.ring').forEach((r,j)=>{r.classList.toggle('on',j===i);r.classList.toggle('dim',j!==i)});
+[...nav.children].forEach((b,j)=>b.setAttribute('aria-current',j===i));
+P.innerHTML=`<h2>${l.n}</h2><p class="line">${l.line}</p><p class="kitchen">Think of it like this: ${l.k}</p><div class="demo">${l.demo}</div><p class="how">${l.how}</p><div class="chips">${l.ex.map(e=>`<span class="chip">${e}</span>`).join('')}</div><div class="steps"><button ${i?'':'disabled'} onclick="go(${i-1})">Zoom out</button><button class="go" ${i<4?'':'disabled'} onclick="go(${i+1})">${i<4?'Zoom in':'The end'}</button></div>`;
+l.init();}
+document.querySelectorAll('.ring').forEach(r=>r.onclick=()=>go(+r.dataset.i));
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'&&cur<4)go(cur+1);if(e.key==='ArrowLeft'&&cur>0)go(cur-1)});
+$('#play').onclick=()=>{$('#intro').classList.add('gone');go(0)};
+go(0);
+/* demos */
+function aiT(v){$('#o').innerHTML=`${v}°C. Rule: "if above 26°, switch the AC on."<br>${v>26?'❄️ AC is ON':'💤 AC stays off'}`}
+const mails=[['WIN a FREE prize now',0],['Lunch at one today?',0],['Claim your FREE reward',0],['Meeting notes attached',0]];
+const W=s=>s.toLowerCase().match(/[a-z]{3,}/g)||[];
+function mlR(){$('#ml').innerHTML=mails.map((m,i)=>`<button class="mail" onclick="mails[${i}][1]=(mails[${i}][1]+1)%3;mlR()"><span>${m[0]}</span><em>${['Tap to label','Spam','Not spam'][m[1]]}</em></button>`).join('');
+const sp=new Set(mails.filter(m=>m[1]==1).flatMap(m=>W(m[0]))),ok=new Set(mails.filter(m=>m[1]==2).flatMap(m=>W(m[0])));
+const t='Free reward waiting, claim now';let sc=0;W(t).forEach(w=>{if(sp.has(w))sc++;if(ok.has(w))sc--});
+const n=mails.filter(m=>m[1]).length;
+$('#o').innerHTML=n<2?'Label at least two emails and the machine will try its first guess.':`New email: "${t}"<br>Machine says: ${sc>0?'🚫 Spam':sc<0?'✅ Not spam':'🤔 Not sure yet, give it more examples'}`}
+const DL=[['🔘','Dots'],['〰️','Edges'],['🔺','Shapes'],['🐱','Cat!']],DT=['Just tiny dots of light. No meaning yet.','Layer 2 finds lines and curves.','Layer 3 finds ears, eyes and whiskers.','The last layer puts it together: this is a cat.'];
+function dlR(n){$('#ly').innerHTML=DL.map((d,i)=>`<div class="${i<n?'lit':''}">${d[0]}<small>${d[1]}</small></div>`).join('');$('#o').textContent=DT[n-1]}
+const G={k:'w'},GT={w:'Write',p:'Paint',m:'Compose'};
+const TXT=['Sharjah mornings smell of cardamom and quiet ambition.','The desert wrote a letter to the sea, and the wind delivered it.','Every great plan begins as a small cup of karak.','Chennai rain taps out a rhythm only the old bus knows.'];
+const ICO=['🏙️','🌅','🐪','🌊','🕌','🌴'],GR=['#f2b84b,#c0392b','#4aa97b,#1b3d6d','#8e44ad,#f2b84b','#1d6c85,#eaf3f6'];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function gen(k){G.k=k;$('#gt').innerHTML=Object.keys(GT).map(x=>`<button class="chip ${x===k?'sel':''}" onclick="gen('${x}')">${GT[x]}</button>`).join('');
+$('#ga').innerHTML=k==='w'?`<div class="out">"${pick(TXT)}"</div>`:k==='p'?`<div class="art" style="background:linear-gradient(135deg,${pick(GR)})">${pick(ICO)}${pick(ICO)}</div>`:`<div class="bars">${Array.from({length:14},()=>`<i style="height:${20+Math.random()*70}px"></i>`).join('')}</div>`}
+const LS=[['Arabic coffee is served in a small',[['cup',70],['glass',18],['bowl',9],['bucket',3]]],['with fresh',[['dates',55],['cardamom',30],['cream',10],['pizza',5]]],['and a warm',[['welcome',60],['smile',28],['towel',8],['engine',4]]]];
+function lm(s,a){const L2=$('#lm');if(s>=3){L2.innerHTML=`<p class="q">"${LS.map((x,i)=>x[0]+' '+a[i]).join(' ')}."</p><div class="out">That is all an LLM does: predict the next word, again and again, using patterns from billions of sentences.</div><div class="steps"><button onclick="lm(0,[])">Play again</button></div>`;return}
+const st=LS[s];L2.innerHTML=`<p class="q">Finish the sentence. Tap the word the machine would pick.</p><p class="out">"${LS.slice(0,s).map((x,i)=>x[0]+' '+a[i]).join(' ')} ${st[0]} ___"</p>${st[1].map(o=>`<button class="opt" onclick="lm(${s+1},[...${JSON.stringify(a)},'${o[0]}'])"><span class="w">${o[0]}</span><span class="b" style="width:${o[1]}%"></span><span>${o[1]}%</span></button>`).join('')}`}
+</script>
+</body>
+</html>
